@@ -181,7 +181,7 @@
       `;
 
       try {
-        const res = await fetch('http://localhost:5000/api/reminder/generate', {
+        const res = await fetch('https://sendemaillater.onrender.com/api/reminder/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subject, recipientName })
@@ -237,7 +237,7 @@
       }
 
       try {
-        const res = await fetch('http://localhost:5000/api/reminder', {
+        const res = await fetch('https://sendemaillater.onrender.com/api/reminder', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
