@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Timetable — Schedulo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .animated-gradient {
+      background: linear-gradient(-45deg, #e0f2fe, #f3e8ff, #ecfeff, #dbeafe);
+      background-size: 400% 400%;
+      animation: gradientBG 25s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .form-input {
+      background-color: rgb(241 245 249 / 0.7);
+      border: 1px solid transparent;
+      transition: all 0.2s ease-in-out;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgb(79 70 229 / 0.2);
+    }
+  </style>
+</head>
+<body class="animated-gradient min-h-full flex items-center justify-center py-12 px-4 antialiased">
+
+  <main class="bg-white/70 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-4xl mx-auto border border-slate-200/50">
+    
+    <!-- Header with Navigation -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-slate-200/80 pb-6">
+      <h1 class="text-3xl font-bold text-slate-800 text-center sm:text-left mb-4 sm:mb-0">Create Student Timetable</h1>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 font-medium text-sm transition flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100/50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+          Home
+        </a>
+        <a href="timetable-dashboard.html" class="text-slate-600 hover:text-blue-600 font-medium text-sm transition flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100/50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h.01a1 1 0 100-2H10zm3 0a1 1 0 000 2h.01a1 1 0 100-2H13z" clip-rule="evenodd" /></svg>
+          Timetables
+        </a>
+      </div>
+    </div>
+    
+    <!-- Error Message Box -->
+    <div id="errorMessage" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-6 text-sm"></div>
+
+    <form id="timetableForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-semibold text-slate-700">Student Name</label>
+          <input type="text" id="studentName" required class="w-full form-input px-4 py-3 rounded-lg" placeholder="John Doe">
+        </div>
+        <div>
+          <label class="block mb-2 font-semibold text-slate-700">Student Emails (comma-separated)</label>
+          <input type="text" id="studentEmails" required class="w-full form-input px-4 py-3 rounded-lg" placeholder="student@example.com, parent@example.com">
+        </div>
+      </div>
+
+      <div>
+        <label class="block mb-2 font-semibold text-slate-700">Frequency</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <select id="frequency" class="w-full form-input px-4 py-3 rounded-lg appearance-none">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="custom">Every X Days</option>
+            </select>
+            <input type="number" id="intervalDays" class="w-full form-input px-4 py-3 rounded-lg hidden" min="1" placeholder="e.g., 2 for every 2 days">
+        </div>
+      </div>
+
+      <div>
+        <label class="block mb-2 font-semibold text-slate-700">Subjects & Times</label>
+        <div id="subjectsContainer" class="space-y-4">
+          <!-- Subject cards will be added here -->
+        </div>
+        <button type="button" id="addSubjectBtn" class="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+          Add Another Subject
+        </button>
+      </div>
+
+      <button type="submit" id="submitButton" class="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-lg text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all transform duration-300">
+        Save Timetable
+      </button>
+    </form>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addSubjectBtn = document.getElementById('addSubjectBtn');
+        const subjectsContainer = document.getElementById('subjectsContainer');
+        const frequencySelect = document.getElementById('frequency');
+        const intervalDaysInput = document.getElementById('intervalDays');
+        const form = document.getElementById('timetableForm');
+        const submitButton = document.getElementById('submitButton');
+        const errorMessage = document.getElementById('errorMessage');
+
+        const createSubjectCard = () => {
+            const card = document.createElement('div');
+            card.className = 'subject-card p-4 bg-slate-100/60 rounded-lg border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 relative';
+            
+            // Set default time to current time
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5);
+
+            card.innerHTML = `
+                <input type="text" class="subject w-full form-input px-3 py-2 rounded-md" placeholder="Subject Name" required>
+                <input type="time" class="timeStart w-full form-input px-3 py-2 rounded-md" value="${currentTime}" required>
+                <input type="text" class="message w-full form-input px-3 py-2 rounded-md" placeholder="Message (optional)">
+                <button type="button" class="remove-subject-btn absolute -top-2 -right-2 h-6 w-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">×</button>
+            `;
+            subjectsContainer.appendChild(card);
+        };
+
+        addSubjectBtn.addEventListener('click', createSubjectCard);
+
+        subjectsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-subject-btn')) {
+                e.target.closest('.subject-card').remove();
+            }
+        });
+
+        frequencySelect.addEventListener('change', () => {
+            intervalDaysInput.classList.toggle('hidden', frequencySelect.value !== 'custom');
+            intervalDaysInput.required = (frequencySelect.value === 'custom');
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.classList.add('hidden');
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>Saving...</span>`;
+            
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentEmails = document.getElementById('studentEmails').value.split(',').map(email => email.trim()).filter(email => email);
+            const freq = frequencySelect.value;
+            const interval = freq === 'custom' ? parseInt(intervalDaysInput.value, 10) : null;
+
+            const entries = Array.from(subjectsContainer.querySelectorAll('.subject-card')).map(card => ({
+                subject: card.querySelector('.subject').value.trim(),
+                timeStart: card.querySelector('.timeStart').value,
+                message: card.querySelector('.message').value.trim()
+            })).filter(entry => entry.subject && entry.timeStart);
+
+            if (studentEmails.length === 0) {
+                 showError("Please enter at least one valid student email.");
+                 return;
+            }
+
+            if (entries.length === 0) {
+                showError("Please add at least one subject to the timetable.");
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/timetable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, studentName, studentEmails, entries, frequency: freq, intervalDays: interval })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = 'success.html';
+                } else {
+                    showError(data.error || 'An error occurred while saving the timetable.');
+                }
+            } catch (err) {
+                console.error(err);
+                showError("A server error occurred. Please try again later.");
+            }
+        });
+
+        const showError = (message) => {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Save Timetable';
+        };
+
+        // Add the first subject card by default
+        createSubjectCard();
+    });
+  </script>
+
+</body>
+</html>

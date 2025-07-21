@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard — Schedulo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="logo.jpg">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .animated-gradient {
+      background: linear-gradient(-45deg, #e0f2fe, #f3e8ff, #ecfeff, #dbeafe);
+      background-size: 400% 400%;
+      animation: gradientBG 25s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .tab-active {
+      background-image: linear-gradient(to right, var(--tw-gradient-stops));
+      --tw-gradient-from: #3b82f6; /* blue-600 */
+      --tw-gradient-to: #9333ea; /* purple-600 */
+      color: rgb(56, 6, 6); /* Corrected for better contrast */
+      box-shadow: 0 4px 15px -4px rgb(124 58 237 / 40%);
+    }
+    
+    .card-enter, .modal-enter, .dropdown-enter {
+      animation: enter-anim 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+    }
+    
+    @keyframes enter-anim {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .card-leave-active {
+      animation: card-leave 0.4s ease-out forwards;
+    }
+
+    @keyframes card-leave {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.9); }
+    }
+  </style>
+</head>
+<body class="animated-gradient min-h-full flex flex-col antialiased">
+
+  <!-- ✅ Navbar with New User Dropdown -->
+  <header class="bg-white/60 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-3">
+        <a href="index.html" class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          Schedulo
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="schedule.html" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:scale-105 shadow-md hover:shadow-lg transition-all transform duration-300">
+            + Schedule New
+          </a>
+          <!-- ✅ User Dropdown Menu -->
+          <div id="user-menu-container" class="relative">
+            <button id="user-menu-button" type="button" class="flex items-center gap-2 text-slate-700 hover:bg-slate-100/80 p-2 rounded-lg transition-colors">
+              <span class="font-medium hidden sm:inline">👋 Welcome, <strong id="username-display">User</strong></span>
+              <span class="font-medium sm:hidden">Menu</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <div id="user-menu-dropdown" class="dropdown-enter hidden absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div class="py-1">
+                <a href="dashboard.html" class="text-slate-700 font-medium block px-4 py-2 text-sm hover:bg-slate-100">Mission Control</a>
+                <a href="timetable-dashboard.html" class="text-slate-700 font-medium block px-4 py-2 text-sm hover:bg-slate-100">Timetables</a>
+                <div class="border-t border-slate-200 my-1"></div>
+                <button id="logoutBtn" class="w-full text-left text-red-600 font-medium block px-4 py-2 text-sm hover:bg-red-50">Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ✅ Main Dashboard Content -->
+  <main class="flex-grow max-w-7xl w-full mx-auto py-8 px-4 sm:px-6 lg:px-8 card-enter" style="animation-delay: 100ms;">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+        <h1 class="text-5xl font-extrabold text-slate-800">Your Mission Control</h1>
+    </div>
+    <div class="mb-8 bg-white/50 backdrop-blur-sm p-1.5 rounded-xl inline-flex gap-2 shadow-md">
+      <button data-tab="upcoming" class="tab-btn tab-active px-5 py-2 text-sm font-semibold rounded-lg transition-all">Upcoming</button>
+      <button data-tab="repeating" class="tab-btn text-slate-600 px-5 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-white/80">Repeating</button>
+      <button data-tab="completed" class="tab-btn text-slate-600 px-5 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-white/80">Completed</button>
+    </div>
+    <div>
+      <div id="upcoming" class="tab-content"></div>
+      <div id="repeating" class="tab-content hidden"></div>
+      <div id="completed" class="tab-content hidden"></div>
+    </div>
+  </main>
+
+  <!-- ✅ Message Viewer Modal -->
+  <div id="message-modal-container" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="message-modal-content" class="modal-enter bg-white/80 backdrop-blur-2xl w-full max-w-2xl rounded-2xl shadow-2xl p-6 border border-slate-200/50">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-slate-800" id="modal-subject"></h2>
+        <button id="modal-close-btn" class="text-xl font-bold text-slate-500 hover:text-red-600 transition-colors">×</button>
+      </div>
+      <p class="text-sm text-slate-600 mb-4">To: <strong class="text-slate-700" id="modal-recipient"></strong></p>
+      <div class="bg-slate-100/50 p-4 rounded-lg max-h-80 overflow-y-auto">
+        <p class="text-slate-700 whitespace-pre-wrap" id="modal-message"></p>
+      </div>
+      <div class="text-right mt-6">
+        <button id="modal-close-btn-footer" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-300 transition">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Element Selection ---
+      const usernameDisplay = document.getElementById('username-display');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const userMenuButton = document.getElementById('user-menu-button');
+      const userMenuDropdown = document.getElementById('user-menu-dropdown');
+      const modalContainer = document.getElementById('message-modal-container');
+      const modalSubject = document.getElementById('modal-subject');
+      const modalRecipient = document.getElementById('modal-recipient');
+      const modalMessage = document.getElementById('modal-message');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+      const modalCloseFooterBtn = document.getElementById('modal-close-btn-footer');
+      
+      const userId = localStorage.getItem('userId');
+      const username = localStorage.getItem('username');
+
+      // --- Authentication & Setup ---
+      if (!userId || !username) {
+        window.location.href = 'login.html';
+        return;
+      }
+      usernameDisplay.textContent = username;
+
+      // --- Event Listeners ---
+      userMenuButton.addEventListener('click', () => {
+        userMenuDropdown.classList.toggle('hidden');
+      });
+
+      window.addEventListener('click', (e) => {
+        if (!document.getElementById('user-menu-container').contains(e.target)) {
+          userMenuDropdown.classList.add('hidden');
+        }
+      });
+      
+      logoutBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to logout?")) {
+          localStorage.clear();
+          window.location.href = 'index.html';
+        }
+      });
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('tab-active', 'text-slate-600'));
+          button.classList.add('tab-active');
+          tabButtons.forEach(btn => { if (!btn.classList.contains('tab-active')) btn.classList.add('text-slate-600')});
+          tabContents.forEach(content => content.id === button.dataset.tab ? content.classList.remove('hidden') : content.classList.add('hidden'));
+        });
+      });
+
+      const closeModal = () => {
+        modalContainer.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      };
+      modalCloseBtn.addEventListener('click', closeModal);
+      modalCloseFooterBtn.addEventListener('click', closeModal);
+      modalContainer.addEventListener('click', (e) => e.target === modalContainer && closeModal());
+
+      document.addEventListener('click', async (e) => {
+        const viewBtn = e.target.closest('.view-message-btn');
+        if (viewBtn) {
+          const reminderData = JSON.parse(viewBtn.dataset.reminder);
+          modalSubject.textContent = reminderData.subject;
+          modalRecipient.textContent = reminderData.recipientName;
+          modalMessage.textContent = reminderData.message;
+          modalContainer.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+          const reminderId = deleteBtn.dataset.id;
+          if (confirm("Are you sure you want to delete this scheduled email?")) {
+            deleteBtn.disabled = true;
+            try {
+              const res = await fetch(`http://localhost:5000/api/reminder/${reminderId}`, { method: 'DELETE' });
+              if (res.ok) {
+                document.querySelectorAll(`.card-${reminderId}`).forEach(card => {
+                    card.classList.add('card-leave-active');
+                    card.addEventListener('animationend', () => card.remove());
+                });
+              } else { 
+                alert(`Error: Could not delete reminder.`); 
+                deleteBtn.disabled = false; 
+              }
+            } catch (err) { 
+              alert("Server error."); 
+              deleteBtn.disabled = false; 
+            }
+          }
+        }
+      });
+
+      // --- Helper Functions for Repeat Logic ---
+      const calculateSentCount = (startDate, now, repeatType) => {
+          if (now < startDate) return 0;
+          const diffTime = now.getTime() - startDate.getTime();
+          let count = 0;
+          switch (repeatType) {
+              case 'daily': count = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; break;
+              case 'weekly': count = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1; break;
+              case 'monthly':
+                  count = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+                  if (now.getDate() < startDate.getDate()) count--;
+                  count = Math.max(0, count) + 1;
+                  break;
+              case 'yearly':
+                  count = now.getFullYear() - startDate.getFullYear();
+                  if (now.getMonth() < startDate.getMonth() || (now.getMonth() === startDate.getMonth() && now.getDate() < startDate.getDate())) count--;
+                  count = Math.max(0, count) + 1;
+                  break;
+              default: count = 1;
+          }
+          return count;
+      };
+
+      const calculateNextSendDate = (originalSendDate, repeatType) => {
+          let nextDate = new Date(originalSendDate.getTime());
+          const now = new Date();
+          if (nextDate > now) return nextDate;
+          while (nextDate <= now) {
+              switch(repeatType) {
+                  case 'daily': nextDate.setDate(nextDate.getDate() + 1); break;
+                  case 'weekly': nextDate.setDate(nextDate.getDate() + 7); break;
+                  case 'monthly': nextDate.setMonth(nextDate.getMonth() + 1); break;
+                  case 'yearly': nextDate.setFullYear(nextDate.getFullYear() + 1); break;
+                  default: return null;
+              }
+          }
+          return nextDate;
+      };
+
+      // --- Main Rendering Logic ---
+      const renderCards = (reminders, container, type) => {
+          container.innerHTML = '';
+          if (reminders.length === 0) {
+              container.innerHTML = `<div class="text-center py-16 bg-white/40 rounded-lg backdrop-blur-sm border border-slate-200/50"><p class="text-slate-600 font-semibold text-lg">No ${type} missions found.</p></div>`;
+              return;
+          }
+          const cardGrid = document.createElement('div');
+          cardGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+
+          if (type === 'upcoming') reminders.sort((a,b) => new Date(a.sendAt) - new Date(b.sendAt));
+          else reminders.sort((a,b) => new Date(b.sendAt) - new Date(a.sendAt));
+
+          reminders.forEach((r, index) => {
+              const sendAt = new Date(r.sendAt);
+              const reminderString = JSON.stringify(r).replace(/'/g, "'");
+
+              const sentCountBadge = (type === 'repeating' && r.sentCount > 0) ? `
+                <div title="${r.sentCount} times sent" class="absolute -top-2 -right-2 flex items-center justify-center h-7 w-7 bg-purple-600 text-white text-xs font-bold rounded-full shadow-lg border-2 border-white">
+                    ${r.sentCount}
+                </div>` : '';
+              
+              const statusBadge = `
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex items-center gap-1.5 ${
+                    type === 'upcoming' ? 'text-blue-800 bg-blue-100' : 
+                    type === 'repeating' ? 'text-purple-800 bg-purple-100' : 'text-green-800 bg-green-100'
+                }">${type === 'repeating' ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg>` : ''}
+                ${r.isClone && type === 'upcoming' ? 'Next Run' : type.charAt(0).toUpperCase() + type.slice(1)}
+                </span>`;
+
+              const cardHTML = `
+              <div id="card-${r.isClone ? 'clone-' : ''}${r._id}" class="card-${r._id} card-enter bg-white/70 backdrop-blur-xl rounded-xl shadow-lg p-5 flex flex-col gap-4 border border-slate-200/50 relative" style="animation-delay: ${index * 60}ms;">
+                  ${sentCountBadge}
+                  <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-lg text-slate-800 break-words pr-2">${r.subject}</h3>
+                    ${statusBadge}
+                  </div>
+                  <p class="text-sm text-slate-600 -mt-2 break-words">To: <span class="font-medium text-slate-700">${r.recipientName}</span></p>
+                  <div class="text-sm text-slate-500 space-y-2 border-t border-slate-200/80 pt-3">
+                      <p class="truncate"><strong>Emails:</strong> ${r.recipientEmails.join(', ')}</p>
+                      <p><strong>Date:</strong> ${sendAt.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'})}</p>
+                  </div>
+                  <div class="mt-auto flex items-center justify-end gap-2">
+                      <button data-reminder='${reminderString}' class="view-message-btn text-slate-400 hover:text-blue-600 hover:bg-blue-100 p-2 rounded-full transition-colors" title="View Message">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                      </button>
+                      <button data-id="${r._id}" class="delete-btn text-slate-400 hover:text-red-600 hover:bg-red-100 p-2 rounded-full transition-colors" title="Delete Mission">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                      </button>
+                  </div>
+              </div>`;
+              cardGrid.innerHTML += cardHTML;
+          });
+          container.appendChild(cardGrid);
+      };
+      
+      const fetchAndRenderReminders = async () => {
+        const containers = { upcoming: document.getElementById('upcoming'), repeating: document.getElementById('repeating'), completed: document.getElementById('completed') };
+        Object.values(containers).forEach(c => c.innerHTML = '<p class="text-slate-500 p-4">Loading missions...</p>');
+        try {
+          const res = await fetch(`http://localhost:5000/api/reminder/all/${userId}`);
+          if (!res.ok) throw new Error('Failed to fetch reminders.');
+          const reminders = await res.json();
+          const now = new Date();
+          const upcoming = [], repeating = [], completed = [];
+          reminders.forEach(r => {
+            const originalSendDate = new Date(r.sendAt);
+            const isRepeating = r.repeat && r.repeat !== 'none';
+            if (isRepeating) {
+              r.sentCount = calculateSentCount(originalSendDate, now, r.repeat);
+              repeating.push(r);
+              const nextSendDate = calculateNextSendDate(originalSendDate, r.repeat);
+              if (nextSendDate) {
+                  const upcomingClone = { ...r, sendAt: nextSendDate, isClone: true };
+                  upcoming.push(upcomingClone);
+              }
+            } else {
+              if (originalSendDate > now) upcoming.push(r); else completed.push(r);
+            }
+          });
+          renderCards(upcoming, containers.upcoming, 'upcoming');
+          renderCards(repeating, containers.repeating, 'repeating');
+          renderCards(completed, containers.completed, 'completed');
+        } catch (error) {
+          console.error(error);
+          Object.values(containers).forEach(c => c.innerHTML = '<p class="text-red-500 p-4">Could not load missions. Please try again later.</p>');
+        }
+      };
+      
+      fetchAndRenderReminders();
+    });
+  </script>
+
+</body>
+</html>

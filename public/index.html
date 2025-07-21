@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <title>Schedulo — Command Your Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      --scroll-delay: 100ms;
+    }
+    .animated-gradient {
+      background: linear-gradient(-45deg, #f0f9ff, #eef2ff, #f3e8ff, #ecfeff);
+      background-size: 400% 400%;
+      animation: gradientBG 20s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .text-gradient {
+      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+	    0% { transform: translatey(0px); }
+	    50% { transform: translatey(-20px); }
+	    100% { transform: translatey(0px); }
+    }
+    [data-scroll] {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        transition-delay: var(--scroll-delay);
+    }
+    [data-scroll].in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .timeline-connector {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      transition: stroke-dashoffset 1.5s ease-in-out 0.5s;
+    }
+    [data-scroll].in-view .timeline-connector {
+      stroke-dashoffset: 0;
+    }
+    .faq-content {
+        transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+        max-height: 0;
+        overflow: hidden;
+    }
+    .faq-item.active .faq-content {
+        max-height: 20rem;
+    }
+    .faq-item.active .faq-toggle svg {
+        transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="animated-gradient min-h-full flex flex-col">
+
+  <div id="announcement-banner" class="bg-indigo-600 text-white text-sm font-medium text-center p-2 relative">
+      <span>✨ Introducing AI-Powered Message Generation! <a href="#features" class="underline hover:text-indigo-200">Learn more</a></span>
+      <button id="close-banner-btn" class="absolute top-1/2 right-4 -translate-y-1/2 text-indigo-200 hover:text-white">×</button>
+  </div>
+
+  <header class="sticky top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg shadow-sm">
+    <nav class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-center py-4">
+            <a href="#" class="text-2xl font-bold text-gradient drop-shadow-[0_2px_4px_rgba(79,70,229,0.3)]">
+              Schedulo
+            </a>
+            <div id="nav-links" class="hidden lg:flex items-center gap-8"></div>
+            <div id="navAction" class="hidden lg:flex items-center gap-2"></div>
+            <div class="lg:hidden">
+              <button id="mobile-menu-button" class="text-slate-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+              </button>
+            </div>
+        </div>
+    </nav>
+  </header>
+  
+  <div id="mobile-menu" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden">
+    <div class="absolute top-0 right-0 h-full w-full max-w-xs bg-white shadow-xl p-6">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xl font-bold text-gradient">Menu</h3>
+        <button id="mobile-menu-close-button">×</button>
+      </div>
+      <div id="mobile-nav-links" class="mt-8 flex flex-col gap-6 text-lg font-semibold text-slate-700"></div>
+      <div id="mobile-nav-action" class="mt-8 flex flex-col gap-4"></div>
+    </div>
+  </div>
+
+  <div> 
+    
+    <main class="relative min-h-screen flex items-center overflow-hidden">
+      <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      <div class="relative max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-16 py-16">
+        <div data-scroll class="text-center lg:text-left order-2 lg:order-1">
+          <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-800 leading-tight tracking-tight">
+            Command Your Calendar. <span class="text-gradient">We Deliver the Message.</span>
+          </h1>
+          <p style="--scroll-delay: 200ms" data-scroll class="mt-6 text-lg text-slate-600 max-w-xl mx-auto lg:mx-0">
+            From birthday greetings to critical business follow-ups, compose emails now and let our platform ensure they arrive with precision and punctuality.
+          </p>
+          <div style="--scroll-delay: 400ms" data-scroll class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="signup.html" id="heroButton" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-105 transition-all transform duration-300">
+              Let's Start
+            </a>
+          </div>
+        </div>
+        <div data-scroll style="--scroll-delay: 400ms" class="flex justify-center order-1 lg:order-2">
+          <div class="animate-float w-full max-w-sm lg:max-w-lg">
+             <img src="assets/hero.png" alt="A 3D symbol representing automated email scheduling from a calendar" class="w-full h-auto" />
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <section class="py-16 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+          <p class="text-sm font-semibold text-slate-500 tracking-wider uppercase">Trusted by professionals and individuals worldwide</p>
+          <div class="mt-8 flex justify-center items-center gap-10 sm:gap-16 flex-wrap opacity-60 grayscale">
+              <img class="h-8 w-auto" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google"/>
+              <img class="h-8 w-auto" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon"/>
+              <img class="h-8 w-auto" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"/>
+          </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="py-16 md:py-24 bg-white">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <div data-scroll>
+          <h2 class="text-4xl md:text-5xl font-extrabold text-slate-800">Your Workflow, Supercharged</h2>
+          <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">It's not just scheduling. It's a suite of tools designed to put you in complete control.</p>
+        </div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto px-6 mt-20 relative">
+        <div data-scroll class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-px h-full">
+            <svg width="2" height="100%" xmlns="http://www.w3.org/2000/svg" class="h-full">
+                <path d="M 1 0 V 1000" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8 8" class="timeline-connector"/>
+            </svg>
+        </div>
+        
+        <!-- ✅ STEP 1: MOBILE (Img -> Text), DESKTOP (Text -> Img) -->
+        <div data-scroll class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16 md:mb-24">
+            <div class="text-center md:text-left order-2 md:order-1">
+                <div class="inline-flex items-center gap-2 text-blue-600 font-semibold bg-blue-100 px-3 py-1 rounded-full mb-4">Step 1</div>
+                <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Craft Your Message</h3>
+                <p class="mt-4 text-slate-600">Use our beautifully simple editor to compose the perfect email every time. Add one recipient or an entire list with ease. Personalize your message with dynamic fields for names, times, or special notes. Need help? Our built-in AI assistant suggests clear, engaging sentences so you never get stuck staring at a blank page again. Whether it’s a gentle reminder, a friendly nudge, or an important update — you’re always prepared to say it right.</p>
+            </div>
+            <div class="flex justify-center items-center p-4 sm:p-6 bg-slate-100/50 rounded-2xl shadow-md border border-slate-200/60 order-1 md:order-2">
+                <img src="assets/img1.png" alt="An illustration of an email being composed on a screen" class="rounded-lg shadow-xl w-full max-w-[280px] sm:max-w-[340px]" />
+            </div>
+        </div>
+
+        <!-- ✅ STEP 2: MOBILE (Img -> Text), DESKTOP (Img -> Text) -->
+        <div data-scroll style="--scroll-delay: 200ms;" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16 md:mb-24">
+            <div class="flex justify-center items-center p-4 sm:p-6 bg-slate-100/50 rounded-2xl shadow-md border border-slate-200/60 order-1">
+                <img src="assets/img2.png" alt="An illustration of a calendar and clock for scheduling" class="rounded-lg shadow-xl w-full max-w-[280px] sm:max-w-[340px]" />
+            </div>
+            <div class="text-center md:text-left order-2">
+                <div class="inline-flex items-center gap-2 text-purple-600 font-semibold bg-purple-100 px-3 py-1 rounded-full mb-4">Step 2</div>
+                <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Pinpoint the Moment</h3>
+                <p class="mt-4 text-slate-600">Select any future date and time. Set up one-time sends or create powerful repeating schedules—daily, weekly, monthly, or yearly.</p>
+            </div>
+        </div>
+        
+        <!-- ✅ STEP 3: MOBILE (Img -> Text), DESKTOP (Text -> Img) -->
+        <div data-scroll style="--scroll-delay: 200ms;" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="text-center md:text-left order-2 md:order-1">
+                <div class="inline-flex items-center gap-2 text-green-600 font-semibold bg-green-100 px-3 py-1 rounded-full mb-4">Step 3</div>
+                <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Launch & Forget</h3>
+                <p class="mt-4 text-slate-600">Once scheduled, our reliable system takes over, guaranteeing your message is delivered on time, every time. Monitor everything from your dashboard.</p>
+            </div>
+            <div class="flex justify-center items-center p-4 sm:p-6 bg-slate-100/50 rounded-2xl shadow-md border border-slate-200/60 order-1 md:order-2">
+                <img src="assets/img3.png" alt="An illustration of a paper airplane flying from a cloud, symbolizing automation" class="rounded-lg shadow-xl w-full max-w-[280px] sm:max-w-[340px]" />
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="py-16 md:py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div data-scroll>
+                <h2 class="text-base font-semibold text-indigo-600 tracking-wider uppercase">Everything you need</h2>
+                <p class="mt-2 text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">Features Built for Productivity</p>
+            </div>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div data-scroll style="--scroll-delay: 200ms;" class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                    <div class="bg-blue-100 text-blue-600 rounded-lg h-10 w-10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732L2.438 12.366a1 1 0 0 1-1-1.732L6 8L1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"/></svg></div>
+                    <h3 class="mt-6 text-xl font-bold">AI Message Generation</h3>
+                    <p class="mt-2 text-slate-500">Stuck on what to write? Let our AI craft the perfect message based on your subject and tone.</p>
+                </div>
+                <div data-scroll style="--scroll-delay: 400ms;" class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                    <div class="bg-purple-100 text-purple-600 rounded-lg h-10 w-10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg></div>
+                    <h3 class="mt-6 text-xl font-bold">Powerful Recurring Emails</h3>
+                    <p class="mt-2 text-slate-500">Automate birthdays, anniversaries, or weekly reports with our flexible repeating schedules.</p>
+                </div>
+                <div data-scroll style="--scroll-delay: 600ms;" class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                    <div class="bg-green-100 text-green-600 rounded-lg h-10 w-10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h.01a1 1 0 100-2H10zm3 0a1 1 0 000 2h.01a1 1 0 100-2H13z" clip-rule="evenodd" /></svg></div>
+                    <h3 class="mt-6 text-xl font-bold">Student Timetables</h3>
+                    <p class="mt-2 text-slate-500">Perfect for educators. Set a student's entire class schedule and automate reminders for each subject.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-24 bg-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 data-scroll class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800">Ready to Take Control?</h2>
+            <p data-scroll style="--scroll-delay: 200ms;" class="mt-4 text-lg text-slate-600">Stop worrying about missed emails. Start automating your communication today and gain peace of mind.</p>
+            <div data-scroll style="--scroll-delay: 400ms;" class="mt-8">
+                <a href="signup.html" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-4 rounded-lg text-xl font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-105 transition-all transform duration-300">
+                    Sign Up Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="py-16 md:py-24 bg-slate-50">
+        <div class="max-w-4xl mx-auto px-6">
+            <div data-scroll class="text-center">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-800">Frequently Asked Questions</h2>
+            </div>
+            <div class="mt-12 space-y-4">
+              <div data-scroll style="--scroll-delay: 200ms;" class="faq-item bg-white p-6 rounded-lg shadow-sm border border-slate-200/80">
+                <button class="faq-toggle w-full flex justify-between items-center text-left font-semibold text-slate-800">
+                  Is my data secure?
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="faq-content text-slate-600 pt-4">Absolutely. We use industry-standard encryption and security protocols. Your scheduled emails and personal information are kept private and secure.</div>
+              </div>
+              <div data-scroll style="--scroll-delay: 400ms;" class="faq-item bg-white p-6 rounded-lg shadow-sm border border-slate-200/80">
+                <button class="faq-toggle w-full flex justify-between items-center text-left font-semibold text-slate-800">
+                  Can I cancel a scheduled email?
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="faq-content text-slate-600 pt-4">Yes! You can view, edit, or delete any scheduled email from your dashboard at any time before it is sent. You have full control.</div>
+              </div>
+              <div data-scroll style="--scroll-delay: 600ms;" class="faq-item bg-white p-6 rounded-lg shadow-sm border border-slate-200/80">
+                <button class="faq-toggle w-full flex justify-between items-center text-left font-semibold text-slate-800">
+                  What happens if I set a repeating schedule?
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="faq-content text-slate-600 pt-4">Our system will automatically resend the email at the interval you specify (daily, weekly, etc.). You can see and manage all repeating schedules in your dashboard.</div>
+              </div>
+            </div>
+        </div>
+    </section>
+    
+  </div>
+  
+  <footer class="text-center py-8 mt-auto bg-transparent">
+    <p class="text-sm text-slate-500">
+      © <span id="year"></span> Schedulo. All rights reserved.
+    </p>
+  </footer>
+
+  <script>
+    // --- Navbar, Menu, Banner, FAQ, and Scroll Animation Logic ---
+    const navLinksContainer = document.getElementById('nav-links');
+    const mobileNavLinksContainer = document.getElementById('mobile-nav-links');
+    const navActionContainer = document.getElementById('navAction');
+    const mobileNavActionContainer = document.getElementById('mobile-nav-action');
+    const heroButton = document.getElementById('heroButton');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
+    
+    const loggedOutLinks = `
+        <a href="#how-it-works" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors">How It Works</a>
+        <a href="#features" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors">Features</a>
+        <a href="#faq" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors">FAQ</a>
+    `;
+
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+    mobileMenuCloseButton.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    mobileMenu.addEventListener('click', (e) => {
+        if (e.target === mobileMenu) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+
+    document.getElementById('close-banner-btn').addEventListener('click', () => {
+        document.getElementById('announcement-banner').style.display = 'none';
+    });
+    
+    document.querySelectorAll('.faq-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const faqItem = button.parentElement;
+            const wasActive = faqItem.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+            if (!wasActive) {
+                faqItem.classList.add('active');
+            }
+        });
+    });
+
+    const scrollElements = document.querySelectorAll("[data-scroll]");
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("in-view");
+        });
+    }, { threshold: 0.1 });
+    scrollElements.forEach(el => scrollObserver.observe(el));
+
+    // --- Login/Logout Logic ---
+    const yearSpan = document.getElementById('year');
+    yearSpan.textContent = new Date().getFullYear();
+    const username = localStorage.getItem('username');
+
+    if (username) {
+        navLinksContainer.innerHTML = '';
+        mobileNavLinksContainer.innerHTML = '';
+        const loggedInActions = `
+            <span class="text-slate-700 font-medium hidden sm:inline">Welcome, <strong>${username}</strong></span>
+            <a href="dashboard.html" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all">Dashboard</a>
+            <button id="logoutBtn" class="text-slate-500 hover:text-red-600 transition" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg></button>
+        `;
+        navActionContainer.innerHTML = loggedInActions;
+        mobileNavActionContainer.innerHTML = `<a href="dashboard.html" class="w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg font-semibold">Dashboard</a><button id="mobileLogoutBtn" class="w-full text-center bg-slate-100 text-red-600 px-4 py-3 rounded-lg font-semibold">Logout</button>`;
+        heroButton.textContent = "Go to Dashboard";
+        heroButton.href = "dashboard.html";
+    } else {
+        navLinksContainer.innerHTML = loggedOutLinks;
+        mobileNavLinksContainer.innerHTML = loggedOutLinks.replace(/class="/g, 'class="block py-2 ');
+        const loggedOutActions = `<a href="login.html" class="text-slate-600 font-semibold hover:text-blue-600 transition px-3 py-2">Login</a><a href="signup.html" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all">Let's Start</a>`;
+        navActionContainer.innerHTML = loggedOutActions;
+        mobileNavActionContainer.innerHTML = `<a href="login.html" class="w-full text-center bg-slate-100 text-slate-700 px-4 py-3 rounded-lg font-semibold">Login</a><a href="signup.html" class="w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg font-semibold">Let's Start</a>`;
+        heroButton.href = "signup.html";
+    }
+
+    heroButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = heroButton.href;
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target && (e.target.closest('#logoutBtn') || e.target.closest('#mobileLogoutBtn'))) {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
+    });
+  </script>
+
+</body>
+</html>

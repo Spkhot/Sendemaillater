@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <title>Timetables — Schedulo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .animated-gradient {
+      background: linear-gradient(-45deg, #e0f2fe, #f3e8ff, #ecfeff, #dbeafe);
+      background-size: 400% 400%;
+      animation: gradientBG 25s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .card-enter {
+      animation: enter-anim 0.4s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+    }
+    
+    @keyframes enter-anim {
+      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .card-leave-active {
+      animation: card-leave 0.4s ease-out forwards;
+    }
+
+    @keyframes card-leave {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.9); }
+    }
+    
+    .entries-panel {
+      transition: all 0.3s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    .entries-panel.expanded {
+      max-height: 500px; /* Adjust as needed */
+    }
+  </style>
+</head>
+<body class="animated-gradient min-h-full flex flex-col antialiased">
+
+  <!-- ✅ Navbar (Themed to match dashboard) -->
+  <header class="bg-white/60 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <a href="index.html" class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          Schedulo
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="dashboard.html" class="text-slate-600 hover:text-blue-600 font-medium text-sm transition hidden sm:block">Mission Control</a>
+          <a href="timetable.html" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:scale-105 shadow-md hover:shadow-lg transition-all transform duration-300">
+            + Add Timetable
+          </a>
+          <button id="logoutBtn" class="text-slate-600 hover:text-red-600 font-medium text-sm transition"></button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ✅ Main Content -->
+  <main class="flex-grow max-w-7xl w-full mx-auto py-8 px-4 sm:px-6 lg:px-8 card-enter" style="animation-delay: 100ms;">
+    <h1 class="text-5xl font-extrabold text-slate-800 mb-8">All Timetables</h1>
+    <div id="timetableList" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <!-- Timetable cards will be injected here -->
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const timetableList = document.getElementById('timetableList');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userId = localStorage.getItem('userId');
+
+        if (!userId) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        logoutBtn.addEventListener('click', () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // --- Event Delegation for Card Interactions ---
+        timetableList.addEventListener('click', async (e) => {
+            // Handle Accordion Toggle
+            const toggleBtn = e.target.closest('.toggle-entries-btn');
+            if (toggleBtn) {
+                const timetableId = toggleBtn.dataset.id;
+                const entriesPanel = document.getElementById(`entries-${timetableId}`);
+                const arrowIcon = toggleBtn.querySelector('svg');
+
+                entriesPanel.classList.toggle('expanded');
+                if (entriesPanel.classList.contains('expanded')) {
+                    toggleBtn.querySelector('span').textContent = 'Hide Entries';
+                    arrowIcon.style.transform = 'rotate(180deg)';
+                } else {
+                    toggleBtn.querySelector('span').textContent = 'View Entries';
+                    arrowIcon.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            // Handle Delete
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const timetableId = deleteBtn.dataset.id;
+                if (confirm("Are you sure you want to delete this entire timetable?")) {
+                    deleteBtn.disabled = true;
+                    try {
+                        const res = await fetch(`http://localhost:5000/api/timetable/${timetableId}`, { method: 'DELETE' });
+                        if (res.ok) {
+                            const card = document.getElementById(`card-${timetableId}`);
+                            card.classList.add('card-leave-active');
+                            card.addEventListener('animationend', () => card.remove());
+                        } else {
+                            alert("Failed to delete timetable.");
+                            deleteBtn.disabled = false;
+                        }
+                    } catch (err) {
+                        alert("Server error.");
+                        deleteBtn.disabled = false;
+                    }
+                }
+            }
+        });
+
+        const renderTimetables = (timetables) => {
+            if (timetables.length === 0) {
+                timetableList.innerHTML = `<div class="col-span-full text-center py-16 bg-white/40 rounded-lg backdrop-blur-sm border border-slate-200/50"><p class="text-slate-600 font-semibold text-lg">No timetables found.</p><p class="text-slate-500 mt-2">Click "+ Add Timetable" to create your first one.</p></div>`;
+                return;
+            }
+
+            timetableList.innerHTML = timetables.map((tt, index) => {
+                const frequencyText = tt.frequency === 'custom' ? `Custom (Every ${tt.intervalDays} days)` : tt.frequency.charAt(0).toUpperCase() + tt.frequency.slice(1);
+                
+                return `
+                <div id="card-${tt._id}" class="card-enter bg-white/70 backdrop-blur-xl rounded-xl shadow-lg p-5 flex flex-col gap-4 border border-slate-200/50" style="animation-delay: ${index * 60}ms;">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-2xl font-bold text-slate-800 break-words pr-2">${tt.studentName}</h2>
+                        <button data-id="${tt._id}" class="delete-btn text-slate-400 hover:text-red-600 hover:bg-red-100 p-2 rounded-full transition-colors" title="Delete Timetable">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="text-sm text-slate-500 space-y-2 -mt-2">
+                        <p class="truncate"><strong>Emails:</strong> <span class="text-slate-700">${tt.studentEmails.join(', ')}</span></p>
+                        <p><strong>Frequency:</strong> <span class="text-slate-700">${frequencyText}</span></p>
+                    </div>
+
+                    <div class="border-t border-slate-200/80 pt-4 mt-auto">
+                        <button data-id="${tt._id}" class="toggle-entries-btn w-full flex justify-between items-center text-left text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors">
+                            <span>View Entries (${tt.entries.length})</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div id="entries-${tt._id}" class="entries-panel mt-3 space-y-3">
+                            ${tt.entries.map(entry => `
+                                <div class="text-xs text-slate-600 border-l-2 border-blue-200 pl-3">
+                                    <p class="font-semibold text-slate-700">${entry.subject}</p>
+                                    <p><strong>Time:</strong> ${entry.timeStart}</p>
+                                    <p class="pt-1 whitespace-pre-wrap">"${entry.message}"</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        };
+
+        const fetchTimetables = async () => {
+            timetableList.innerHTML = `<p class="col-span-full text-slate-500 p-4">Loading timetables...</p>`;
+            try {
+                const res = await fetch(`http://localhost:5000/api/timetable/all/${userId}`);
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.error || "Failed to load timetables.");
+                }
+                const timetables = await res.json();
+                renderTimetables(timetables);
+            } catch (err) {
+                console.error(err);
+                timetableList.innerHTML = `<p class="col-span-full text-red-500 p-4">${err.message}</p>`;
+            }
+        };
+
+        fetchTimetables();
+    });
+  </script>
+
+</body>
+</html>
