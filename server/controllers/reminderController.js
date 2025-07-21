@@ -80,13 +80,13 @@ exports.sendDueReminders = async () => {
       });
     }
 
-    // 📧 Also send copy to the user
+   // 📧 Also send copy to the user
     const user = await User.findById(reminder.userId);
     if (user && user.email) {
       await sendEmail({
         to: user.email,
         subject: `[Copy] ${reminder.subject}`,
-        text: `You sent this message:\n\n${reminder.message}`
+        text: `Subject: ${reminder.subject}\n\nMessage:\n${reminder.message}`
       });
     }
 
