@@ -126,7 +126,7 @@
                 if (confirm("Are you sure you want to delete this entire timetable?")) {
                     deleteBtn.disabled = true;
                     try {
-                        const res = await fetch(`http://localhost:5000/api/timetable/${timetableId}`, { method: 'DELETE' });
+                        const res = await fetch(`https://sendemaillater.onrender.com/api/timetable/${timetableId}`, { method: 'DELETE' });
                         if (res.ok) {
                             const card = document.getElementById(`card-${timetableId}`);
                             card.classList.add('card-leave-active');
@@ -189,7 +189,7 @@
         const fetchTimetables = async () => {
             timetableList.innerHTML = `<p class="col-span-full text-slate-500 p-4">Loading timetables...</p>`;
             try {
-                const res = await fetch(`http://localhost:5000/api/timetable/all/${userId}`);
+                const res = await fetch(`https://sendemaillater.onrender.com/api/timetable/all/${userId}`);
                 if (!res.ok) {
                     const errorData = await res.json();
                     throw new Error(errorData.error || "Failed to load timetables.");

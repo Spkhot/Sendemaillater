@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Sign Up — SendEmailLater</title>
   <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="assets/icon.png">
+ <link rel="icon" href="logo.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -148,7 +148,7 @@
       const password = document.getElementById('password').value;
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/signup', {
+        const res = await fetch('https://sendemaillater.onrender.com/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, email, password })

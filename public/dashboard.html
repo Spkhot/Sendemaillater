@@ -207,7 +207,7 @@
           if (confirm("Are you sure you want to delete this scheduled email?")) {
             deleteBtn.disabled = true;
             try {
-              const res = await fetch(`http://localhost:5000/api/reminder/${reminderId}`, { method: 'DELETE' });
+              const res = await fetch(`https://sendemaillater.onrender.com/api/reminder/${reminderId}`, { method: 'DELETE' });
               if (res.ok) {
                 document.querySelectorAll(`.card-${reminderId}`).forEach(card => {
                     card.classList.add('card-leave-active');
@@ -324,7 +324,7 @@
         const containers = { upcoming: document.getElementById('upcoming'), repeating: document.getElementById('repeating'), completed: document.getElementById('completed') };
         Object.values(containers).forEach(c => c.innerHTML = '<p class="text-slate-500 p-4">Loading missions...</p>');
         try {
-          const res = await fetch(`http://localhost:5000/api/reminder/all/${userId}`);
+          const res = await fetch(`https://sendemaillater.onrender.com/api/reminder/all/${userId}`);
           if (!res.ok) throw new Error('Failed to fetch reminders.');
           const reminders = await res.json();
           const now = new Date();

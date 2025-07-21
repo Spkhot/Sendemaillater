@@ -172,7 +172,7 @@
             }
 
             try {
-                const res = await fetch('http://localhost:5000/api/timetable', {
+                const res = await fetch('https://sendemaillater.onrender.com/api/timetable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, studentName, studentEmails, entries, frequency: freq, intervalDays: interval })
