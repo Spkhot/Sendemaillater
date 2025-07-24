@@ -104,7 +104,7 @@ cron.schedule('* * * * *', async () => {
         await sendEmail({
           to: user.email,
           subject: `${reminder.subject}`,
-          text: `Hello :\n\n${reminder.message}`
+          text: `Hello :${reminder.recipientName}\n${reminder.message}`
         });
       }
 
