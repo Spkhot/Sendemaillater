@@ -89,21 +89,21 @@ cron.schedule('* * * * *', async () => {
 
     try {
       // Send to all recipients
-      const recipients = reminder.recipientEmails || [];
-      for (const email of recipients) {
-        await sendEmail({
-          to: email,
-          subject: reminder.subject,
-          text: reminder.message
-        });
-      }
+      // const recipients = reminder.recipientEmails || [];
+      // for (const email of recipients) {
+      //   await sendEmail({
+      //     to: email,
+      //     subject: reminder.subject,
+      //     text: reminder.message
+      //   });
+      // }
 
       // Send copy to user
       const user = await User.findById(reminder.userId);
       if (user && user.email) {
         await sendEmail({
           to: user.email,
-          subject: `[COPY] ${reminder.subject}`,
+          subject: `${reminder.subject}`,
           text: `Hello :\n\n${reminder.message}`
         });
       }
